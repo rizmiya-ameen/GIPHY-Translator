@@ -18,7 +18,7 @@ Visit the deployed site [here](https://rizmiya-giphy-translator.surge.sh).
 
 Never be at a loss for the perfect GIF again. Express yourself in a whole new way with Giphy Translator!
 
-![Giphy Translator](screenshot.png)
+![Giphy Translator](/screenshot.png)
 
 
 ## Acknowledgments
