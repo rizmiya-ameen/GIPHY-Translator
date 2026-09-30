@@ -20,7 +20,7 @@ This fun and user-friendly application leverages the power of the Giphy API and 
 
 Visit the deployed site [here](https://rizmiya-giphy-translator.surge.sh).
 
-## Running Locally
+<!-- ## Running Locally
 
 1. Get a free API key from the [GIPHY Developer Dashboard](https://developers.giphy.com/dashboard/).
 2. Create a `.env.local` file in the project root:
@@ -38,12 +38,11 @@ Visit the deployed site [here](https://rizmiya-giphy-translator.surge.sh).
 
 Run the tests with `yarn test`, and create a production build with `yarn build`.
 
----
+--- -->
 
 Never be at a loss for the perfect GIF again. Express yourself in a whole new way with Giphy Translator!
 
 ![Giphy Translator](screenshot.png)
-
 
 ## Acknowledgments
 
