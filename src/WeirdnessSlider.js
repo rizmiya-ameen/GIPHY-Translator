@@ -1,38 +1,45 @@
-import React from 'react'
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
-import { Container, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react'
+import { Box, Slider, Stack, Typography } from '@mui/material'
 
-const WeirdnessSlider = ({weirdness, setWeirdness}) => {
+const LEVELS = [
+  { max: 2, label: 'Literal' },
+  { max: 4, label: 'A little odd' },
+  { max: 6, label: 'Quirky' },
+  { max: 8, label: 'Bizarre' },
+  { max: 10, label: 'Off the charts' },
+]
 
+const describe = (value) => LEVELS.find((level) => value <= level.max).label
 
-  const handleSliderChange = (event) => {
-    const newValue = parseInt(event.target.value);
-    setWeirdness(newValue);
-  };
+const WeirdnessSlider = ({ weirdness, onChange, disabled }) => {
+  // Track the thumb locally so dragging is smooth; only commit (and fetch) on release
+  const [value, setValue] = useState(weirdness)
+
+  useEffect(() => setValue(weirdness), [weirdness])
 
   return (
-    <Container sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-
-
-      <Box sx={{ width: '50%', }}>
-        <Slider
-          aria-label="Weirdness Level"
-          defaultValue={1}
-          value={weirdness}
-          valueLabelDisplay="auto"
-          step={1}
-          marks
-          min={1}
-          max={10}
-          onChange={handleSliderChange}
-        />
-
-        <Typography sx={{fontSize: '20px'}}>Weirdness Level: {weirdness}</Typography>
-
-      </Box>
-
-    </Container>
+    <Box sx={{ width: '100%', maxWidth: 480, mx: 'auto' }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+        <Typography id="weirdness-label" variant="subtitle2">
+          Weirdness
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {value}/10 · {describe(value)}
+        </Typography>
+      </Stack>
+      <Slider
+        aria-labelledby="weirdness-label"
+        value={value}
+        step={1}
+        marks
+        min={0}
+        max={10}
+        disabled={disabled}
+        onChange={(_, newValue) => setValue(newValue)}
+        onChangeCommitted={(_, newValue) => onChange(newValue)}
+        color="secondary"
+      />
+    </Box>
   )
 }
 

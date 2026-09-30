@@ -1,58 +1,94 @@
-import React, { useState } from 'react'
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { Button, Container, Typography } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react'
+import { Box, Button, Chip, CircularProgress, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material'
+import { CloseIcon, SearchIcon } from './icons'
 
+const SUGGESTIONS = ['happy friday', 'mind blown', 'thank you', 'nope', 'coffee time', 'deal with it']
+const MAX_LENGTH = 50
 
-const SearchBar = ({setPhrase, setWeirdness}) => {
+const SearchBar = ({ phrase, onSearch, loading }) => {
+  const [word, setWord] = useState('')
+  const inputRef = useRef(null)
+  const trimmed = word.trim()
 
-  const [word, setWord] = useState("")
+  // Reflect searches started elsewhere (suggestions, recent searches) in the input
+  useEffect(() => setWord(phrase), [phrase])
 
-  const handleText = () => {
-    setPhrase(word);
-    setWord("") 
-    setWeirdness(1)
+  // Press "/" anywhere to jump to the search box
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key !== '/' || event.target.closest('input, textarea')) return
+      event.preventDefault()
+      inputRef.current?.focus()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (trimmed) onSearch(trimmed)
   }
-  
+
   return (
-
-    <Container sx={{ position: 'relative', }}>
-
-      <div
-        style={{
-        position: 'absolute',
-        width: '20%',
-        height: '50%',
-        top: '0',
-        right: '400px',
-        backgroundColor: '#7aebfb',
-        filter: 'blur(80px)',
-        zIndex: -1, 
-        }}
-      ></div>
-      <Typography sx={{fontSize: '40px', marginBottom: '50px', marginTop: '80px',}}>GIPHY Translator</Typography>
-      
-      <Box 
-        sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '50px'}}
-      >
-        <TextField  
-          id="outlined-basic" 
-          label="Enter a Word / Phrase" 
-          variant="outlined" 
+    <Box component="form" onSubmit={handleSubmit} role="search" sx={{ width: '100%', maxWidth: 640, mx: 'auto' }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+        <TextField
+          fullWidth
+          inputRef={inputRef}
+          label="Enter a word or phrase"
+          placeholder="e.g. good morning"
           value={word}
-          onChange={(event) => setWord(event.currentTarget.value)} 
-          style={{flex: '0.3'}} 
+          onChange={(event) => setWord(event.target.value)}
+          inputProps={{ maxLength: MAX_LENGTH, 'aria-label': 'Word or phrase to translate' }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: word && (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="Clear"
+                  edge="end"
+                  size="small"
+                  onClick={() => {
+                    setWord('')
+                    inputRef.current?.focus()
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
-          <Button 
-            variant="contained" 
-            onClick={handleText} 
-            style={{height: '58px', marginLeft: '10px', fontSize: '18px'}}
-          >
-            Translate
-          </Button>
-        </Box>
-      
-    </Container>
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          disabled={!trimmed || loading}
+          sx={{ px: 4, minHeight: 56, fontSize: 17, flexShrink: 0 }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" aria-label="Loading" /> : 'Translate'}
+        </Button>
+      </Stack>
+
+      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" justifyContent="center" alignItems="center" sx={{ mt: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          Try:
+        </Typography>
+        {SUGGESTIONS.map((suggestion) => (
+          <Chip
+            key={suggestion}
+            label={suggestion}
+            size="small"
+            variant="outlined"
+            onClick={() => onSearch(suggestion)}
+          />
+        ))}
+      </Stack>
+    </Box>
   )
 }
 
